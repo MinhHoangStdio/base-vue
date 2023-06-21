@@ -1,6 +1,6 @@
 <template>
-  <div>
-    Minh pro 2
+  <div class="bg-slate-300 p-4">
+    User pages
   </div>
 </template>
  

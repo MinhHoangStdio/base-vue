@@ -1,6 +1,6 @@
 <template>
     <div>
-       Minh pro 
+       Dashboard page
     </div>
 </template>
 
