@@ -3,5 +3,9 @@ const state = {
     show: true,
   },
   user: [],
+  listEvents: {
+    isLoading: false,
+    data: [],
+  },
 };
 export default state;

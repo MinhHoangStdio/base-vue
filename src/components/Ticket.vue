@@ -1,4 +1,6 @@
 <script setup>
+import {convertDateFirebase} from "../util/firebaseHelper";
+
 const props = defineProps({
 	ticket: Object,
 });
@@ -20,56 +22,16 @@ const showticket = () =>{
 			relative
 			hover:cursor-pointer
 		">
-    <div>{{ ticket.title }}</div>
+    <div>{{ticket.actions[0].description }}</div>
     <div class="text-gray-400 text-sm">
-      {{ ticket.author }}, {{ ticket.created_at }}
+      {{ ticket.assign.firstName }}, {{convertDateFirebase(ticket.actions[0].createdAt) }}
     </div>
-    <div class="text-gray-300 flex items-center">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-        <path fill-rule="evenodd" d="M18 13V5a2 2 0 00-2-2H4a2 2 0 00-2 2v8a2 2 0 002 2h3l3 3 3-3h3a2 2 0 002-2zM5 7a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1zm1 3a1 1 0 100 2h3a1 1 0 100-2H6z" clip-rule="evenodd" />
-      </svg>
-      <span class="text-gray-400 font-semibold">
-        {{ ticket.comments_count }}
+    <div class=" flex items-center">
+
+      <span class=" font-semibold">
+        {{ ticket.title }}
       </span>
     </div>
-    <div v-if="ticket.level == 'Low Level'" class="
-				absolute
-				top-4
-				right-4
-				bg-green-100
-				text-green-700
-				font-semibold
-				text-sm
-				px-3
-				rounded-full
-			">
-      {{ ticket.level }}
-    </div>
-    <div v-if="ticket.level == 'Medium Level'" class="
-				absolute
-				top-4
-				right-4
-				bg-yellow-100
-				text-yellow-700
-				font-semibold
-				text-sm
-				px-3
-				rounded-full
-			">
-      {{ ticket.level }}
-    </div>
-    <div v-if="ticket.level == 'High Level'" class="
-				absolute
-				top-4
-				right-4
-				bg-red-100
-				text-red-700
-				font-semibold
-				text-sm
-				px-3
-				rounded-full
-			">
-      {{ ticket.level }}
-    </div>
+
   </div>
 </template>
