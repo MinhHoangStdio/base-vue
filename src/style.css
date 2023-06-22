@@ -1,3 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.primary-btn {
+  @apply block px-2 rounded py-2 text-center bg-neutral-500 text-white hover:bg-neutral-600;
+}

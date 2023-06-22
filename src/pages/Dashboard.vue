@@ -3,14 +3,16 @@
 import { Timestamp } from "firebase/firestore";
 import { ref, computed, onMounted } from "vue";
 import draggable from "vuedraggable";
-import Ticket from "../components/Ticket.vue";
+import Ticket from "../components/Dashboard/Ticket.vue";
 import store from "../store"
 
 const lists = computed(()=>store.state.listEvents.data)
+console.log({lists})
 const isLoadingListEvents = computed(()=>store.state.listEvents.isLoading)
 
 onMounted(async()=>{
 	store.dispatch("getListEvents")
+	store.dispatch("getListUsers")
 })
 
 const dragOptions = computed(() => {
@@ -25,9 +27,9 @@ function handleChange(e,listEvents=null){
 	// console.log(listEvents.find(list=>list.label_status === e.to.getAttribute("data-id")).events[e.newIndex])
 	// console.log({from:e.from.getAttribute("data-id")});console.log({to:e.to.getAttribute("data-id")}); console.log({e})
 	// console.log({...changedEvent, status: e.to.getAttribute("data-id")})
-	console.log({e})
+	// console.log({e})
 	const changedEvent = listEvents.find(list=>list.label_status === e.to.getAttribute("data-id")).events[e.newIndex]
-	console.log({changedEvent})
+	// console.log({changedEvent})
 
 	const params = {
 		...changedEvent,
@@ -39,8 +41,12 @@ function handleChange(e,listEvents=null){
 		},...changedEvent.actions]
 	}
 	console.log({params})
-	store.dispatch("updateListEvents",params)
+	store.dispatch("updateStatusAnEvent",params)
 }
+
+const handleOpenCreateEventModal = () =>{
+	store.commit("openModalCreateEvent")
+} 
 
 
 </script>
@@ -52,9 +58,14 @@ function handleChange(e,listEvents=null){
   </div>
 
   <!-- content  -->
-  <div v-else class="grid grid-cols-4 gap-3">
-    <div v-for="list in lists" :key="list.label_status" class="border border-gray-300 rounded-md bg-gray-50">
-      <div class="
+  <div v-else>
+    <div class="flex items-center gap-4	">
+      <h1 class="font-bold text-2xl">Events</h1>
+      <button @click="handleOpenCreateEventModal" class="primary-btn">Add new event</button>
+    </div>
+    <div class="grid grid-cols-4 gap-3 mt-2">
+      <div v-for="list in lists" :key="list.label_status" class="border border-gray-300 rounded-md bg-gray-50">
+        <div class="
 					bg-white
 					border-b border-gray-300
 					p-4
@@ -63,16 +74,16 @@ function handleChange(e,listEvents=null){
 					items-center
 					justify-between
 				">
-        <div class="text-lg font-semibold">
-          {{ list.label_status }}
-        </div>
+          <div class="text-lg font-semibold">
+            {{ list.label_status }}
+          </div>
 
-        <div class="flex items-center space-x-4">
-          <!-- <button v-if="list.label_status == 'done'" class="text-blue-500 hover:text-blue-700 font-semibold">
+          <div class="flex items-center space-x-4">
+            <!-- <button v-if="list.label_status == 'done'" class="text-blue-500 hover:text-blue-700 font-semibold">
             Clear all
           </button> -->
 
-          <span class="
+            <span class="
 							block
 							py-1
 							px-3
@@ -81,18 +92,20 @@ function handleChange(e,listEvents=null){
 							text-sm
 							font-semibold
 						">
-            {{ list.events.length }}
-          </span>
+              {{ list.events.length }}
+            </span>
+          </div>
         </div>
-      </div>
 
-      <div class="p-4 h-full">
-        <draggable :data-id="list.label_status" @end="(event)=>handleChange(event, lists)" class="min-h-full" :list="list.events" group="tickets" itemKey="name" v-bind="dragOptions">
-          <template #item="{ element }">
-            <Ticket :ticket="element" />
-          </template>
-        </draggable>
+        <div class="p-4 h-full">
+          <draggable :data-id="list.label_status" @end="(event)=>handleChange(event, lists)" class="min-h-full" :list="list.events" group="tickets" itemKey="name" v-bind="dragOptions">
+            <template #item="{ element }">
+              <Ticket :ticket="element" />
+            </template>
+          </draggable>
+        </div>
       </div>
     </div>
   </div>
+
 </template>

@@ -7,12 +7,30 @@ import {
   setDoc,
   updateDoc,
 } from "@firebase/firestore";
+import { v4 as uuid } from "uuid";
 import { db, timestamp } from "../firebase";
 import { groupByStatus } from "../util/firebaseHelper";
 
+//===============================ListUsers==================================\\
+export const getListUsers = async ({ commit }) => {
+  console.log("getListUsers");
+  commit("callListUsers");
+
+  const q = query(collection(db, "users"));
+  onSnapshot(q, (snapShot) => {
+    const listUsersInFirebase = snapShot.docs.map((doc) => {
+      return { id: doc.id, ...doc.data() };
+    });
+    // console.log({ listUsersInFirebase });
+    // const listUsers = groupByStatus(listUsersInFirebase);
+    // console.log({ listUsers });
+    commit("setListUsers", listUsersInFirebase);
+  });
+};
+
 //===============================ListEvent==================================\\
 export const getListEvents = async ({ commit }) => {
-  console.log("yolo");
+  console.log("getListEvents");
   commit("callListEvents");
 
   const q = query(collection(db, "events"));
@@ -22,12 +40,28 @@ export const getListEvents = async ({ commit }) => {
     });
     //   console.log({ listEventInFirebase });
     const listEvents = groupByStatus(listEventInFirebase);
-    console.log({ listEvents });
+    // console.log({ listEvents });
     commit("setListEvents", listEvents);
   });
 };
+//===============================CRUD Event==================================\\
 
-export const updateListEvents = async ({ commit }, params) => {
+export const createEvent = async ({ commit }, params) => {
+  const newEventId = uuid();
+  const { status } = params;
+  const newEvent = {
+    id: newEventId,
+    is_done: status === "done",
+    ...params,
+  };
+  // console.log({ newEvent });
+
+  const eventsRef = doc(db, "events", newEventId);
+  await setDoc(eventsRef, newEvent);
+  commit("createEventSuccess");
+};
+
+export const updateStatusAnEvent = async ({ commit }, params) => {
   console.log("update list Event", params);
 
   const listRef = doc(db, "events", params.id);
@@ -35,4 +69,14 @@ export const updateListEvents = async ({ commit }, params) => {
     ...params,
   };
   await updateDoc(listRef, newEvent);
+};
+
+export const updateEvent = async ({ commit }, params) => {
+  const listRef = doc(db, "events", params.id);
+
+  const newEvent = {
+    ...params,
+  };
+  await updateDoc(listRef, newEvent);
+  commit("updateEventSuccess");
 };
