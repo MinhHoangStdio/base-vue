@@ -1,16 +1,18 @@
 <script setup>
-import {convertDateFirebase} from "../util/firebaseHelper";
+import {convertDateFirebase} from "../../util/firebaseHelper";
+import store from "../../store"
 
 const props = defineProps({
 	ticket: Object,
 });
-const showticket = () =>{
-    console.log({value:props.ticket})
+const handleOpenModalDetail = () =>{
+    store.commit("setEventDetail",props.ticket)
+    store.commit("openModalUpdateEvent")
 }
 </script>
 
 <template>
-  <div @click="showticket" class="
+  <div @click="handleOpenModalDetail" class="
 			bg-white
 			p-4
 			mb-3
