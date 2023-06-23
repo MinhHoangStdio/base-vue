@@ -50,11 +50,16 @@ export function openModalUpdateEvent(state) {
 export function closeModalUpdateEvent(state) {
   state.popup.showModalUpdateEvent = false;
 }
-
+export function openModalDetailEvent(state) {
+  state.popup.showModalDetailEvent = true;
+}
+export function closeModalDetailEvent(state) {
+  state.popup.showModalDetailEvent = false;
+}
 
 //Login
 export function login(state) {
-    state.login.isLoading = true;
+  state.login.isLoading = true;
 }
 
 export function loginSuccess(state, payload) {
@@ -71,13 +76,12 @@ export function loginFailer(state, payload) {
 export function logout(state) {
   state.login.isLoading = false;
   state.login.isLogged = false;
-  state.user.data = null
+  state.user.data = null;
 }
 
 export function getUser(state, payload) {
-  state.user.data = payload 
+  state.user.data = payload;
 }
-
 
 // // List User
 // export function callListUsers(state) {
