@@ -7,7 +7,7 @@ const props = defineProps({
 });
 const handleOpenModalDetail = () =>{
     store.commit("setEventDetail",props.ticket)
-    store.commit("openModalUpdateEvent")
+    store.commit("openModalDetailEvent")
 }
 </script>
 

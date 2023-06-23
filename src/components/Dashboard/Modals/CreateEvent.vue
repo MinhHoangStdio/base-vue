@@ -20,10 +20,10 @@
         const params = {
         ...values,
         status: "created",
-        assign: store.state.listUsers.data[0],
+        assign: store.state.user.data,
         actions: [
             {
-            description: `${store.state.listUsers.data[0]?.firstName} has created a new event`,
+            description: `${store.state.user.data?.firstName} has created a new event`,
             type: "",
             createdAt: Timestamp.now(),
             },

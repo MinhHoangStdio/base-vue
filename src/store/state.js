@@ -1,6 +1,7 @@
-import { getAuth } from "../util/auth";
+import { getAuth, getCurentUser } from "../util/auth";
 
 const api_token = getAuth()?.api_token;
+const currentUser = getCurentUser();
 
 const state = {
   sideBar: {
@@ -12,7 +13,7 @@ const state = {
     isLogged: api_token ? true : false,
   },
   user: {
-    data: null
+    data: currentUser || null,
   },
   listEvents: {
     isLoading: false,
@@ -27,6 +28,5 @@ const state = {
     isLoading: false,
     data: [],
   },
-  
 };
 export default state;

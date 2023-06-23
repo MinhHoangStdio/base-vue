@@ -3,13 +3,37 @@
     import {useForm} from "vee-validate"
     import * as yup from "yup"
     import {serverTimestamp, Timestamp} from 'firebase/firestore'
-    import { computed } from "vue"
+    import { computed, reactive, ref, onMounted, onBeforeUnmount } from "vue"
     import {compareString} from "../../../util/compareString"
+    import {displayStatusLabel} from "../../../util/dispayStatusLabel"
 
     const listUsers = computed(()=>store.state.listUsers.data)
     const listUser = store.state.listUsers.data
     const eventDetail = store.state.eventDetail
 
+    const listStatus = reactive([
+        {label:"Todo",value:"created"},
+        {label:"In progress",value:"in_progress"},
+        {label:"Done",value:"done"},
+        {label:"Close",value:"close"},
+    ])
+    const showOptionStatus = ref(false)
+    const showOptionAssign = ref(false)
+
+    const closeAllOptions = ()=>{
+        showOptionStatus.value = false;
+        showOptionAssign.value = false;
+        
+    }
+    const toggleShowOptionStatus= ()=>{
+        showOptionStatus.value = !showOptionStatus.value;
+        showOptionAssign.value = false;
+    }
+
+    const toggleShowOptionAssign= ()=>{
+        showOptionStatus.value = false;
+        showOptionAssign.value = !showOptionAssign.value;
+    }
 
     const schema = yup.object({
         title: yup.string().required('Please enter title'),
@@ -37,6 +61,17 @@
 
     const closePopup = ()=>{
         store.commit('closeModalUpdateEvent')
+    }
+
+    const handleChangeStatus = (value)=>{
+        console.log({value})
+        setFieldValue("status",value)
+        closeAllOptions()
+    }
+
+    const handleChangeAssign = value => {
+        setFieldValue("assign",value)
+        closeAllOptions()
     }
 
     const handleAddAnotherActivity = ()=>{
@@ -67,7 +102,7 @@
         ? [
             {
               ...actions.value[0],
-              description: `${listUser[0]?.firstName}: ${actions.value[0].description}`,
+              description: `${store.state.user.data?.firstName}: ${actions.value[0].description}`,
               createdAt: Timestamp.now(),
             },
           ]
@@ -76,7 +111,7 @@
     if (!compareString(title.value, eventDetail.title)) {
       newActions.push({
         type: "",
-        description: `${listUser[0]?.firstName} changed the title to ${title.value}`,
+        description: `${store.state.user.data?.firstName} changed the title to ${title.value}`,
         createdAt: Timestamp.now(),
       });
     }
@@ -86,7 +121,7 @@
     if (!compareString(assign.value, eventDetail.assign.firstName)) {
       newActions.push({
         type: "",
-        description: `${listUser[0]?.firstName} changed the assign to ${assign.value}`,
+        description: `${store.state.user.data?.firstName} changed the assign to ${assign.value}`,
         createdAt: Timestamp.now(),
       });
     }
@@ -97,7 +132,7 @@
       newActions.push({
         type: "",
         description: `${
-          listUser[0]?.firstName
+          store.state.user.data?.firstName
         } changed the status to ${displayStatusLabel(status.value)}`,
         createdAt: Timestamp.now(),
       });
@@ -106,7 +141,7 @@
     if (!compareString(description.value, eventDetail.description)) {
       newActions.push({
         type: "",
-        description: `${listUser[0]?.firstName} changed the description`,
+        description: `${store.state.user.data?.firstName} changed the description`,
         createdAt: Timestamp.now(),
       });
     }
@@ -128,7 +163,7 @@
 
 <template>
   <div class="popup-overlay" @click="closePopup">
-    <div class="rounded-md w-[800px] min-h-[300px] bg-white" @click.stop>
+    <div class="rounded-md w-[800px] min-h-[300px] bg-white" @click.stop="closeAllOptions">
       <!-- Nội dung của popup -->
       <div class="
 					bg-white
@@ -162,9 +197,23 @@
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="assign">
                   Assign
                 </label>
-                <select name="assign" v-model="assign" class="shadow appearance-none border border-gray-200  rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" :class="{'border-red-400 focus:border-red-400 focus:ring-0 focus:ring-offset-0':errors.assign}" id="assign">
+                <!-- <select name="assign" v-model="assign" class="shadow appearance-none border border-gray-200  rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" :class="{'border-red-400 focus:border-red-400 focus:ring-0 focus:ring-offset-0':errors.assign}" id="assign">
                   <option v-for="user in listUsers" :key="user.id" :value="user.firstName">{{ user.firstName }}</option>
-                </select>
+                </select> -->
+                <div class="relative">
+                  <div>
+                    <button @click.stop="toggleShowOptionAssign" type="button" class="inline-flex justify-between shadow appearance-none border border-gray-200  rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" :class="{'border-red-400 focus:border-red-400 focus:ring-0 focus:ring-offset-0':errors.status}" id="assign" aria-expanded="true" aria-haspopup="true">
+                      {{ assign }}
+                      <svg class="-mr-1 h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                        <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+                      </svg>
+                    </button>
+                  </div>
+
+                  <div v-if="showOptionAssign" class="absolute right-0 z-10 mt-2 w-full origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button">
+                    <button v-for="user in listUsers" :key="user.id" @click.stop="handleChangeAssign(user.firstName)" type="button" class=" py-1 hover:bg-slate-300 text-gray-700 block w-full px-4 py-2 text-left text-sm" id="menu-item-3">{{ user.firstName }}</button>
+                  </div>
+                </div>
                 <span class="text-red-400">{{errors.assign}}</span>
               </div>
 
@@ -172,12 +221,22 @@
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="status">
                   Status
                 </label>
-                <select name="status" v-model="status" class="shadow appearance-none border border-gray-200  rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" :class="{'border-red-400 focus:border-red-400 focus:ring-0 focus:ring-offset-0':errors.status}" id="status">
-                  <option value="created">Todo</option>
-                  <option value="in_progress">In progress</option>
-                  <option value="done">Done</option>
-                  <option value="close">Close</option>
-                </select>
+                <div class="relative">
+                  <div>
+                    <button @click.stop="toggleShowOptionStatus" type="button" class="inline-flex justify-between shadow appearance-none border border-gray-200  rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" :class="{'border-red-400 focus:border-red-400 focus:ring-0 focus:ring-offset-0':errors.status}" id="status" aria-expanded="true" aria-haspopup="true">
+                      {{ displayStatusLabel(status) }}
+                      <svg class="-mr-1 h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                        <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+                      </svg>
+                    </button>
+                  </div>
+
+                  <div v-if="showOptionStatus" class="absolute right-0 z-10 mt-2 w-full origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button">
+
+                    <button v-for="status in listStatus" :key="status.label" @click.stop="handleChangeStatus(status.value)" type="button" class=" py-1 hover:bg-slate-300 text-gray-700 block w-full px-4 py-2 text-left text-sm" id="menu-item-3">{{ status.label }}</button>
+
+                  </div>
+                </div>
                 <span class="text-red-400">{{errors.status}}</span>
               </div>
             </div>

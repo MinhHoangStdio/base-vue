@@ -5,7 +5,9 @@ import { ref, computed, onMounted } from "vue";
 import draggable from "vuedraggable";
 import Ticket from "../components/Dashboard/Ticket.vue";
 import store from "../store"
+import {displayStatusLabel} from "../util/dispayStatusLabel"
 
+const currentUser = store.state.user.data
 const lists = computed(()=>store.state.listEvents.data)
 console.log({lists})
 const isLoadingListEvents = computed(()=>store.state.listEvents.isLoading)
@@ -42,17 +44,22 @@ function handleChange(e,listEvents=null){
 		...changedEvent,
 		status: e.to.getAttribute("data-id"),
 		actions: [{
-			description: `Minh pro changed the status to ${e.to.getAttribute("data-id")}`,
+			description: `${currentUser?.firstName} changed the status to ${displayStatusLabel(e.to.getAttribute("data-id"))}`,
 			type:'',
 			createdAt: Timestamp.now()
 		},...changedEvent.actions]
 	}
 	console.log({params})
-	store.dispatch("updateStatusAnEvent",params)
+	if(displayStatusLabel(e.to.getAttribute("data-id"))!==displayStatusLabel(e.from.getAttribute("data-id"))){
+		console.log('Bắn')
+		store.dispatch("updateStatusAnEvent",params)
+	}
+
 }
 
 const handleOpenCreateEventModal = () =>{
 	store.commit("openModalCreateEvent")
+	console.log(currentUser.firstName)
 } 
 
 
@@ -82,7 +89,7 @@ const handleOpenCreateEventModal = () =>{
 					justify-between
 				">
           <div class="text-lg font-semibold">
-            {{ list.label_status }}
+            {{ displayStatusLabel(list.label_status) }}
           </div>
 
           <div class="flex items-center space-x-4">

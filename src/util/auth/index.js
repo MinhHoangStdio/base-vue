@@ -1,6 +1,6 @@
-const AUTH_LOCAL_STORAGE_KEY = 'access_token'
+const AUTH_LOCAL_STORAGE_KEY = "access_token";
 
-const getAuth = (key = 'access_token') => {
+const getAuth = (key = "access_token") => {
   if (!localStorage) {
     return;
   }
@@ -20,6 +20,15 @@ const getAuth = (key = 'access_token') => {
   } catch (error) {
     console.error("AUTH LOCAL STORAGE PARSE ERROR", error);
   }
+};
+
+const getCurentUser = () => {
+  const curentUser = localStorage.getItem("me");
+  if (!curentUser) {
+    return;
+  }
+  const curentUserData = JSON.parse(curentUser);
+  return curentUserData;
 };
 
 const getSessionStorage = (key) => {
@@ -95,4 +104,5 @@ export {
   logout,
   getSessionStorage,
   removeSessionStorage,
+  getCurentUser,
 };
