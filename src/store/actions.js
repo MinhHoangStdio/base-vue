@@ -1,14 +1,17 @@
 import {
   collection,
-  deleteDoc,
   doc,
+  getDoc,
   onSnapshot,
   query,
-  setDoc,
   updateDoc,
+  setDoc,
 } from "@firebase/firestore";
 import { v4 as uuid } from "uuid";
 import { db, timestamp } from "../firebase";
+
+import axiosClient from "../api/axiosClient";
+import { setAuth } from "../util/auth";
 import { groupByStatus } from "../util/firebaseHelper";
 
 //===============================ListUsers==================================\\
@@ -79,4 +82,57 @@ export const updateEvent = async ({ commit }, params) => {
   };
   await updateDoc(listRef, newEvent);
   commit("updateEventSuccess");
+};
+//===============================Login==================================\\
+
+export const login = async ({ commit }, credentials) => {
+  try {
+    const response = await axiosClient.post("api/authenticate", credentials);
+
+    if (response?.id_token) {
+      setAuth({
+        api_token: response?.id_token || "",
+      });
+      const user_response = await axiosClient.get("api/account");
+      commit("loginSuccess");
+      commit("getUser", user_response);
+    } else {
+      commit("loginFailer");
+    }
+  } catch (error) {
+    commit("loginFailer");
+    console.error(error);
+  }
+};
+
+export const logout = async ({ commit }) => {
+  try {
+    localStorage.removeItem('access_token')
+    localStorage.removeItem('me')
+    commit("logout");
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const getAccountUser = async ({ commit }) => {
+  try {
+    const user_response = await axiosClient.get("api/account");
+    if (user_response) {
+      localStorage.setItem('me', JSON.stringify(user_response))
+      commit("getUser", user_response);
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+// write user to firestore when user login for the first time
+export const writeUserToFireStore = async ({ commit }, user) => {
+  const userDocRef = doc(db, "users", user.id.toString());
+  const userDocSnap = await getDoc(userDocRef);
+  if (!userDocSnap.exists()) {
+    const newUser = user;
+    await setDoc(userDocRef, newUser);
+  }
 };

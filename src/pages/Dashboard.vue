@@ -9,10 +9,17 @@ import store from "../store"
 const lists = computed(()=>store.state.listEvents.data)
 console.log({lists})
 const isLoadingListEvents = computed(()=>store.state.listEvents.isLoading)
+const user = store.state.user.data
 
 onMounted(async()=>{
 	store.dispatch("getListEvents")
 	store.dispatch("getListUsers")
+
+	store.dispatch("getAccountUser")
+
+	if (user) {
+		store.dispatch("writeUserToFireStore", user)
+	}
 })
 
 const dragOptions = computed(() => {

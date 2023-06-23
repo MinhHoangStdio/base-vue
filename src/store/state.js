@@ -1,13 +1,19 @@
+import { getAuth } from "../util/auth";
+
+const api_token = getAuth()?.api_token;
+
 const state = {
   sideBar: {
     show: true,
   },
-  user: [],
-  listUsers: {
-    isLoading: false,
-    data: [],
-  },
   eventDetail: {},
+  login: {
+    isLoading: false,
+    isLogged: api_token ? true : false,
+  },
+  user: {
+    data: null
+  },
   listEvents: {
     isLoading: false,
     data: [],
@@ -17,5 +23,10 @@ const state = {
     showModalUpdateEvent: false,
     showModalDetailEvent: false,
   },
+  listUsers: {
+    isLoading: false,
+    data: [],
+  },
+  
 };
 export default state;
