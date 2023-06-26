@@ -8,9 +8,9 @@ export function callListUsers(state) {
   state.listUsers.isLoading = true;
 }
 export function setListUsers(state, payload) {
-  // console.log("user", payload);
   state.listUsers.data = payload;
   state.listUsers.isLoading = false;
+  state.listUsers.dataFilter = payload;
 }
 
 //Events
@@ -19,13 +19,11 @@ export function callListEvents(state) {
   state.listEvents.isLoading = true;
 }
 export function setListEvents(state, payload) {
-  // console.log("event", payload);
   state.listEvents.data = payload;
   state.listEvents.isLoading = false;
 }
 
 export function setEventDetail(state, payload) {
-  // console.log("eventDetail", payload);
   state.eventDetail = payload;
 }
 
@@ -83,11 +81,6 @@ export function getUser(state, payload) {
   state.user.data = payload;
 }
 
-// // List User
-// export function callListUsers(state) {
-//   state.listUsers.isLoading = true;
-// }
-// export function setListUsers(state, payload) {
-//   state.listUsers.data = payload;
-//   state.listUsers.isLoading = false;
-// }
+export function searchUser(state, payload) {
+  state.listUsers.data = payload;
+}

@@ -65,8 +65,6 @@ export const createEvent = async ({ commit }, params) => {
 };
 
 export const updateStatusAnEvent = async ({ commit }, params) => {
-  console.log("update list Event", params);
-
   const listRef = doc(db, "events", params.id);
   const newEvent = {
     ...params,
@@ -102,14 +100,14 @@ export const login = async ({ commit }, credentials) => {
   } catch (error) {
     commit("loginFailer");
     console.error(error);
-    alert(error.response.data.message)
+    alert(error.response.data.message);
   }
 };
 
 export const logout = async ({ commit }) => {
   try {
-    localStorage.removeItem('access_token')
-    localStorage.removeItem('me')
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("me");
     commit("logout");
   } catch (error) {
     console.error(error);
@@ -120,7 +118,7 @@ export const getAccountUser = async ({ commit }) => {
   try {
     const user_response = await axiosClient.get("api/account");
     if (user_response) {
-      localStorage.setItem('me', JSON.stringify(user_response))
+      localStorage.setItem("me", JSON.stringify(user_response));
       commit("getUser", user_response);
     }
   } catch (error) {
@@ -136,4 +134,8 @@ export const writeUserToFireStore = async ({ commit }, user) => {
     const newUser = user;
     await setDoc(userDocRef, newUser);
   }
+};
+
+export const SearchUser = ({ commit }, users) => {
+  commit("searchUser", users);
 };

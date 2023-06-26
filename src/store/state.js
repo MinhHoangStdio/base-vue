@@ -27,6 +27,7 @@ const state = {
   listUsers: {
     isLoading: false,
     data: [],
+    dataFilter: []
   },
 };
 export default state;

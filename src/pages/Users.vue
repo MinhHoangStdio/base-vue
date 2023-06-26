@@ -210,7 +210,10 @@ import router from "../router";
 import store from "../store";
 
 const sortUser = ref("ASC");
+
 const selectedStatus = ref("All");
+
+const initListUser = computed(() => store.state.listUsers.dataFilter)
 
 const listUsers = computed(() => store.state.listUsers.data);
 
@@ -225,8 +228,11 @@ watch(query, (newQuery, oldQuery) => {
 });
 
 function SearchUsers(query) {
-  const filteredUsers = listUsers.value.filter((user) => user.email.includes(query));
-  listUsers.value = filteredUsers;
+  
+  const filteredUsers = initListUser.value.filter((user) => user.email.includes(query));
+ 
+  store.dispatch('SearchUser', filteredUsers)
+
 }
 
 function RedirectDetailUser(user) {
