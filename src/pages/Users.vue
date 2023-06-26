@@ -9,7 +9,7 @@
 
         <div class="flex items-center mt-10">
           <div class="font-medium text-gray-600 mr-6">
-            {{ filteredUsers?.length }} users
+            {{ listUsers?.length }} users
           </div>
           <div class="mr-6">
             <div class="relative">
@@ -108,9 +108,9 @@
         </div>
       </div>
 
-      <div class="" v-if="filteredUsers.length > 0">
+      <div class="" v-if="listUsers.length > 0">
         <div
-          v-for="user in filteredUsers"
+          v-for="user in listUsers"
           :key="user.id"
           class="px-30 bg-white max-h-600 overflow-y-auto"
         >
@@ -176,7 +176,7 @@
                   </svg>
                 </button>
 
-                <button class="w-5 h-5 ml-4">
+                <button class="w-5 h-5 ml-4" @click="RedirectDetailUser(user)">
                   <svg
                     width="24"
                     height="24"
@@ -206,12 +206,18 @@
 
 <script setup>
 import { ref, onMounted, computed, watch } from "vue";
+import router from "../router";
 import store from "../store";
 
 const sortUser = ref("ASC");
 const selectedStatus = ref("All");
 
-const listUsers = ref(store.state.listUsers.data);
+const listUsers = computed(() => store.state.listUsers.data);
+
+onMounted(async () => {
+  await store.dispatch("getListUsers");
+});
+
 const query = ref("");
 
 watch(query, (newQuery, oldQuery) => {
@@ -219,15 +225,12 @@ watch(query, (newQuery, oldQuery) => {
 });
 
 function SearchUsers(query) {
-  const filteredUsers = store.state.listUsers.data.filter((user) =>
-    user.email.includes(query)
-  );
+  const filteredUsers = listUsers.value.filter((user) => user.email.includes(query));
   listUsers.value = filteredUsers;
 }
 
-const filteredUsers = computed(() => listUsers.value);
+function RedirectDetailUser(user) {
+  router.push(`/users/${user.id}`)
+}
 
-onMounted(async () => {
-  store.dispatch("getListUsers");
-});
 </script>

@@ -102,6 +102,7 @@ export const login = async ({ commit }, credentials) => {
   } catch (error) {
     commit("loginFailer");
     console.error(error);
+    alert(error.response.data.message)
   }
 };
 

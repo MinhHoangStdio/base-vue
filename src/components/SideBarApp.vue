@@ -42,7 +42,7 @@
           </div>
 
           <div class="flex flex-col">
-            <span class=" text-white">{{ _user?.firstName + " " + _user?.lastName  }}</span>
+            <span class=" text-white">{{ user?.firstName + " " + user?.lastName  }}</span>
           </div>
         </div>
       </ul>
@@ -54,7 +54,9 @@
 import { computed } from "vue";
 import store from "../store";
 
-const _user = computed(() => store.state.user.data)
+const me = JSON.parse(localStorage.getItem('me'))
+
+const user = computed(() => store.state.user.data || me)
 
 const showSidebarClass = computed(() => {
   return store.state.sideBar.show

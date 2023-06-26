@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import Dashboard from "../pages/Dashboard.vue";
 import Users from "../pages/Users.vue";
+import UserDetail from "../pages/UserDetail.vue";
 import Events from "../pages/Events.vue";
 import DefaultLayout from "../components/DefaultLayout.vue";
 import LoginLayout from "../components/LoginLayout.vue";
@@ -29,6 +30,11 @@ const routes = [
         path: "users",
         name: "users",
         component: Users,
+      },
+      {
+        path: "users/:id",
+        name: "usersDetail",
+        component: UserDetail,
       },
     ],
   },

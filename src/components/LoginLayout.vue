@@ -6,7 +6,7 @@
       <h2 class="text-3xl font-bold text-center text-gray-800 pb-10 pt-2">
         Login
       </h2>
-      <form>
+      <form @keyup.enter="handleLogin">
         <div class="mb-4">
           <label
             class="block text-gray-700 text-sm font-bold mb-3"
@@ -66,5 +66,4 @@ const handleLogin = () => {
   };
   store.dispatch("login", credentials);
 };
-
 </script>
